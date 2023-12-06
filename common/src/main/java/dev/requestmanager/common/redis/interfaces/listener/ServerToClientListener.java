@@ -1,6 +1,6 @@
-package dev.requestmanager.common.redis;
+package dev.requestmanager.common.redis.interfaces.listener;
 
-import dev.requestmanager.common.redis.clientToServer.handshake.HandshakeRequest;
+import dev.requestmanager.common.redis.interfaces.RedisRequestListener;
 import dev.requestmanager.common.redis.serverToClient.game.GameStartRequest;
 
 public interface ServerToClientListener extends RedisRequestListener {

@@ -1,6 +1,8 @@
-package dev.requestmanager.common.redis;
+package dev.requestmanager.common.redis.sync;
 
 import com.google.gson.Gson;
+import dev.requestmanager.common.redis.RedisRequest;
+import dev.requestmanager.common.redis.interfaces.RedisResponse;
 import org.json.JSONObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
@@ -8,12 +10,12 @@ import redis.clients.jedis.JedisPubSub;
 import java.util.concurrent.*;
 
 
-public class RequestClient {
+public class SyncRequestClient {
 
     private String channelId;
     private ConcurrentMap<String, JSONObject> awaitingRequests = new ConcurrentHashMap<>();
 
-    public RequestClient(String channelId) {
+    public SyncRequestClient(String channelId) {
         this.channelId=channelId;
     }
 
@@ -59,7 +61,7 @@ public class RequestClient {
 
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(() -> {
-            if (awaitingRequests.get(request.getRequestId().toString()).has("success")) {
+            if (!awaitingRequests.get(request.getRequestId().toString()).isEmpty()) {
                 Gson gson = new Gson();
                 JSONObject responseObject = awaitingRequests.get(request.getRequestId().toString());
                 K response = gson.fromJson(responseObject.toString(), responseCLass);

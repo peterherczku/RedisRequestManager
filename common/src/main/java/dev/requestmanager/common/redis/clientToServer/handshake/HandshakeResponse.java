@@ -1,17 +1,16 @@
-package dev.requestmanager.common.redis.handshake;
+package dev.requestmanager.common.redis.clientToServer.handshake;
 
-import dev.requestmanager.common.redis.RedisResponse;
+import dev.requestmanager.common.redis.interfaces.RedisResponse;
 
 public class HandshakeResponse implements RedisResponse {
 
-    private boolean success;
+    private String message;
 
-    public void setResponse(boolean success) {
-        this.success=success;
+    public String getMessage() {
+        return message;
     }
 
-    public boolean isSuccess() {
-        return success;
+    public void setMessage(String message) {
+        this.message = message;
     }
-
 }

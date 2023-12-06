@@ -1,10 +1,10 @@
-package dev.requestmanager.common.redis.handshake;
+package dev.requestmanager.common.redis.clientToServer.handshake;
 
-import dev.requestmanager.common.redis.RedisBody;
+import dev.requestmanager.common.redis.interfaces.listener.ClientToServerListener;
+import dev.requestmanager.common.redis.interfaces.RedisBody;
 import dev.requestmanager.common.redis.RedisRequest;
+import dev.requestmanager.common.redis.interfaces.RedisRequestListener;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 public class HandshakeRequest extends RedisRequest<HandshakeRequest.Body, HandshakeResponse> {
@@ -18,9 +18,8 @@ public class HandshakeRequest extends RedisRequest<HandshakeRequest.Body, Handsh
     }
 
     @Override
-    public void processRequest() {
-        this.response=new HandshakeResponse();
-        this.response.setResponse(body.getName().equalsIgnoreCase("dza"));
+    public void processRequest(RedisRequestListener listener) {
+        ((ClientToServerListener) listener).processHandshake(this);
     }
 
     public static class Body implements RedisBody {

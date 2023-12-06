@@ -1,8 +1,7 @@
-package dev.requestmanager.common.redis.sync;
+package dev.requestmanager.common.redis;
 
 import com.google.gson.Gson;
-import dev.requestmanager.common.redis.RedisRequest;
-import dev.requestmanager.common.redis.handshake.HandshakeRequest;
+import dev.requestmanager.common.redis.interfaces.RedisRequestListener;
 import org.json.JSONObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
@@ -10,13 +9,15 @@ import redis.clients.jedis.JedisPubSub;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class SyncRequestServer {
+public class RequestServer {
 
     private String channelId;
     private ConcurrentMap<String, RedisRequest> requests = new ConcurrentHashMap<>();
+    private RedisRequestListener listener;
 
-    public SyncRequestServer(String channelId) {
+    public RequestServer(String channelId, RedisRequestListener listener) {
         this.channelId=channelId;
+        this.listener=listener;
     }
 
     public void init() {
@@ -36,13 +37,13 @@ public class SyncRequestServer {
 
     public void handleIncomingMessage(JSONObject message) {
         String requestName = message.getString("requestName");
-        HandshakeRequest request = (HandshakeRequest) requests.get(requestName);
+        RedisRequest request = requests.get(requestName);
         request.readRequest(message);
-        request.processRequest();
+        request.processRequest(listener);
 
         JSONObject response = new JSONObject();
         response.put("requestName", requestName);
-        response.put("requestId", request.requestId);
+        response.put("requestId", request.getRequestId());
         response.put("response", true);
 
         Gson gson = new Gson();
