@@ -1,6 +1,6 @@
 package dev.requestmanager.common.redis.serverToClient.game;
 
-import dev.requestmanager.common.redis.interfaces.RedisBody;
+import dev.requestmanager.common.redis.interfaces.RedisRequestBody;
 import dev.requestmanager.common.redis.RedisRequest;
 import dev.requestmanager.common.redis.interfaces.RedisRequestListener;
 import dev.requestmanager.common.redis.interfaces.listener.ServerToClientListener;
@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class GameStartRequest extends RedisRequest<GameStartRequest.Body, GameStartResponse> {
+public class GameStartRequest extends RedisRequest<GameStartRequest.RequestBody, GameStartResponse> {
 
     public GameStartRequest() {
         super("GAME_START");
     }
 
-    public GameStartRequest(Map<String, String> headers, Body body) {
+    public GameStartRequest(Map<String, String> headers, RequestBody body) {
         super("GAME_START", headers, body);
     }
 
@@ -30,11 +30,11 @@ public class GameStartRequest extends RedisRequest<GameStartRequest.Body, GameSt
         this.response.setSuccess(true);*/
     }
 
-    public static class Body implements RedisBody {
+    public static class RequestBody implements RedisRequestBody {
 
         private List<UUID> uuids;
 
-        public Body(List<UUID> uuids) {
+        public RequestBody(List<UUID> uuids) {
             this.uuids=uuids;
         }
 

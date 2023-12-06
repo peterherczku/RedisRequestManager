@@ -1,7 +1,7 @@
 package dev.requestmanager.common.redis;
 
 import com.google.gson.Gson;
-import dev.requestmanager.common.redis.interfaces.RedisBody;
+import dev.requestmanager.common.redis.interfaces.RedisRequestBody;
 import dev.requestmanager.common.redis.interfaces.RedisRequestListener;
 import dev.requestmanager.common.redis.interfaces.RedisResponse;
 import org.json.JSONArray;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class RedisRequest<T extends RedisBody, K extends RedisResponse> {
+public abstract class RedisRequest<T extends RedisRequestBody, K extends RedisResponse> {
 
     protected UUID requestId;
     protected String requestName;

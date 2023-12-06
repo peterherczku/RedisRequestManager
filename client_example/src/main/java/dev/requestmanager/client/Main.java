@@ -17,7 +17,7 @@ public class Main {
 
         HandshakeRequest handshakeRequestSync = new HandshakeRequest(
                 Map.of("header name", "header value"),
-                new HandshakeRequest.Body("Peter")
+                new HandshakeRequest.RequestBody("Peter")
         );
         HandshakeResponse response = syncRequestClient.send(handshakeRequestSync, HandshakeResponse.class);
         System.out.println("SYNC: "+response.getMessage());
@@ -29,7 +29,7 @@ public class Main {
 
         HandshakeRequest handshakeRequest = new HandshakeRequest(
                 Map.of("header name", "header value"),
-                new HandshakeRequest.Body("Peter")
+                new HandshakeRequest.RequestBody("Peter")
         );
         asyncRequestClient.send(handshakeRequest, HandshakeResponse.class).thenAccept((handshakeResponse -> {
             System.out.println("ASYNC: "+handshakeResponse.getMessage());

@@ -1,19 +1,19 @@
 package dev.requestmanager.common.redis.clientToServer.handshake;
 
 import dev.requestmanager.common.redis.interfaces.listener.ClientToServerListener;
-import dev.requestmanager.common.redis.interfaces.RedisBody;
+import dev.requestmanager.common.redis.interfaces.RedisRequestBody;
 import dev.requestmanager.common.redis.RedisRequest;
 import dev.requestmanager.common.redis.interfaces.RedisRequestListener;
 
 import java.util.Map;
 
-public class HandshakeRequest extends RedisRequest<HandshakeRequest.Body, HandshakeResponse> {
+public class HandshakeRequest extends RedisRequest<HandshakeRequest.RequestBody, HandshakeResponse> {
 
     public HandshakeRequest() {
         super("HANDSHAKE");
     }
 
-    public HandshakeRequest(Map<String, String> headers, Body body) {
+    public HandshakeRequest(Map<String, String> headers, RequestBody body) {
         super("HANDSHAKE", headers, body);
     }
 
@@ -22,11 +22,11 @@ public class HandshakeRequest extends RedisRequest<HandshakeRequest.Body, Handsh
         ((ClientToServerListener) listener).processHandshake(this);
     }
 
-    public static class Body implements RedisBody {
+    public static class RequestBody implements RedisRequestBody {
 
         private String name;
 
-        public Body(String name) {
+        public RequestBody(String name) {
             this.name=name;
         }
 
