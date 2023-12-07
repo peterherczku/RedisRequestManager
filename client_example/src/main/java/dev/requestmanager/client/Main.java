@@ -10,30 +10,15 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) {
-
         // sync
         SyncRequestClient syncRequestClient = new SyncRequestClient("CLIENT->SERVER");
         syncRequestClient.init();
 
         HandshakeRequest handshakeRequestSync = new HandshakeRequest(
                 Map.of("header name", "header value"),
-                new HandshakeRequest.RequestBody("Peter")
+                new HandshakeRequest.RequestBody("Quynh")
         );
         HandshakeResponse response = syncRequestClient.send(handshakeRequestSync, HandshakeResponse.class);
-        System.out.println("SYNC: "+response.getMessage());
-
-        // async with completable future
-
-        AsyncRequestClient asyncRequestClient = new AsyncRequestClient("CLIENT->SERVER");
-        asyncRequestClient.init();
-
-        HandshakeRequest handshakeRequest = new HandshakeRequest(
-                Map.of("header name", "header value"),
-                new HandshakeRequest.RequestBody("Peter")
-        );
-        asyncRequestClient.send(handshakeRequest, HandshakeResponse.class).thenAccept((handshakeResponse -> {
-            System.out.println("ASYNC: "+handshakeResponse.getMessage());
-        }));
     }
 
 }

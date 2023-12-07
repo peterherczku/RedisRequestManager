@@ -14,13 +14,11 @@ public class Main {
     }
 
     public static class RequestHandler implements ClientToServerListener {
-
         @Override
         public void processHandshake(HandshakeRequest request) {
-            System.out.println("procesing handshake request");
             HandshakeResponse response =new HandshakeResponse();
             String name = request.getBody().getName();
-            response.setMessage("Welcome "+name+", it's lovely to meet you!");
+            response.setMessage("Hello "+name+", it's lovely to meet you!");
             request.setResponse(response);
         }
     }

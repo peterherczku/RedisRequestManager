@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class RequestServer {
 
-    private String channelId;
+    private final String channelId;
     private ConcurrentMap<String, RedisRequest> requests = new ConcurrentHashMap<>();
     private RedisRequestListener listener;
 
@@ -24,8 +24,8 @@ public class RequestServer {
         subscribeToChannel();
 
         try {
-            System.out.println("Sleeping 1000ms");
             Thread.sleep(1000);
+            System.out.println("Server initialized.");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

@@ -8,21 +8,24 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 public class AsyncRequestClient {
 
-    private String channelId;
-    private ConcurrentMap<String, JSONObject> awaitingRequests = new ConcurrentHashMap<>();
+    private final String channelId;
+    private ConcurrentMap<String, Consumer<RedisResponse>> awaitingRequests = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, Class<? extends RedisResponse>> awaitingRequestsClasses = new ConcurrentHashMap<>();
 
     public AsyncRequestClient(String channelId) {
         this.channelId=channelId;
     }
 
     public void init() {
+        System.out.println("Initializing Async Client...");
         connectToChannel();
         try {
-            System.out.println("Sleeping 1000ms");
             Thread.sleep(1000);
+            System.out.println("Async Client initialized.");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -30,7 +33,11 @@ public class AsyncRequestClient {
 
     public void handleIncomingResponse(JSONObject message) {
         String requestId = message.getString("requestId");
-        awaitingRequests.replace(requestId, message.getJSONObject("body"));
+        Gson gson = new Gson();
+        if (!awaitingRequests.containsKey(requestId)) return;
+        awaitingRequests.get(requestId).accept(gson.fromJson(message.getJSONObject("body").toString(), awaitingRequestsClasses.get(requestId)));
+        awaitingRequestsClasses.remove(requestId);
+        awaitingRequests.remove(requestId);
     }
 
     public void connectToChannel() {
@@ -51,24 +58,16 @@ public class AsyncRequestClient {
     }
 
     public <T extends RedisRequest, K extends RedisResponse> CompletableFuture<K> send(T request, Class<K> responseCLass) {
+        CompletableFuture<K> completableFuture = new CompletableFuture<>();
+
+        awaitingRequestsClasses.put(request.getRequestId().toString(), responseCLass);
+        awaitingRequests.put(request.getRequestId().toString(), (data) -> {
+            completableFuture.complete((K) data);
+        });
+
         JSONObject requestObject = request.writeRequest();
         Jedis jedis = new Jedis();
         jedis.publish(channelId, requestObject.toString());
-        awaitingRequests.put(request.getRequestId().toString(), new JSONObject());
-
-        CompletableFuture<K> completableFuture = new CompletableFuture<>();
-
-        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            if (!awaitingRequests.get(request.getRequestId().toString()).isEmpty()) {
-                Gson gson = new Gson();
-                JSONObject responseObject = awaitingRequests.get(request.getRequestId().toString());
-                K response = gson.fromJson(responseObject.toString(), responseCLass);
-                completableFuture.complete(response);
-                awaitingRequests.remove(request.getRequestId().toString());
-                scheduledExecutorService.shutdown();
-            }
-        }, 0, 100, TimeUnit.MILLISECONDS);
 
         return completableFuture;
     }
